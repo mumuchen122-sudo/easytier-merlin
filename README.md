@@ -39,6 +39,7 @@ sh /tmp/easytier/install.sh
 
 ### 配置文件
 
+<<<<<<< HEAD
 1. 复制配置内容粘贴到插件的配置文件文本框
 2. 点击「保存配置」
 3. 示例-更多配置查看[EasyTier 官方文档](https://easytier.cn/)：
@@ -74,6 +75,22 @@ uri = "wss://mutton.binbat.com:11011"
 [[proxy_network]]
 cidr = "192.168.133.0/24"
 ```
+=======
+1. 访问 [EasyTier 官方配置生成工具](https://easytier.cn/web/index.html#/config_generator)
+2. 根据向导生成配置文件
+3. 复制配置内容粘贴到插件的配置文件文本框
+4. 点击「保存配置」
+
+### 服务控制
+
+- **启动服务**：启动 EasyTier VPN 服务
+- **停止服务**：停止正在运行的服务
+- **重启服务**：重启服务以应用新配置
+
+### 开机自启动
+
+勾选「开机自启动」选项并保存，系统重启后会自动启动 EasyTier 服务。
+>>>>>>> 8e323566b59f1c5809e6d0f29a1e1cd65d826a28
 
 ## 文件结构
 
@@ -105,3 +122,7 @@ sh /koolshare/scripts/uninstall_easytier.sh
 
 - [EasyTier 官方项目](https://github.com/EasyTier/EasyTier)
 - [EasyTier 官方文档](https://easytier.cn/)
+<<<<<<< HEAD
+=======
+- [配置生成工具](https://easytier.cn/web/index.html#/config_generator)
+>>>>>>> 8e323566b59f1c5809e6d0f29a1e1cd65d826a28
