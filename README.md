@@ -47,26 +47,26 @@ sh /tmp/easytier/install.sh
 # 1. 全局配置 (必须放在最前面)
 # ==========================================
 hostname = "asus-router"
-ipv4 = "10.126.126.133"
+ipv4 = "10.126.126.***"
 
 # ==========================================
 # 2. 网络身份验证
 # ==========================================
 [network_identity]
-network_name = "binbatnet"
-network_secret = "zhuanfalun"
+network_name = "aaa"
+network_secret = "aaa"
 
 # ==========================================
 # 3. 对等节点配置 (每个节点必须单独写一个 [[peer]])
 # ==========================================
 [[peer]]
-uri = "udp://mutton.binbat.com:11010"
+uri = "udp://aaa.com:11010"
 
 [[peer]]
-uri = "tcp://mutton.binbat.com:11010"
+uri = "tcp://aaa.com:11010"
 
 [[peer]]
-uri = "wss://mutton.binbat.com:11011"
+uri = "wss://aaa.com:11011"
 
 # ==========================================
 # 4. 旁路路由/子网代理 (每个网段单独写一个 [[proxy_network]])
