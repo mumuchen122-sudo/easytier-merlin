@@ -213,6 +213,17 @@ function clear_config() {
         update_autostart_availability();
     }
 }
+
+function clear_runtime_log() {
+    if (confirm("确定要清空 EasyTier 运行日志吗？")) {
+        var postData = {"id": parseInt(Math.random()*100000000), "method": "easytier_config.sh", "params": ["clear_runtime_log", "web_submit"], "fields": {}};
+        $.ajax({
+            type: "POST", url: "/_api/", data: JSON.stringify(postData), dataType: "json", timeout: 10000,
+            success: function() { alert("运行日志已清空！"); },
+            error: function() { alert("清空运行日志失败！"); }
+        });
+    }
+}
 </script>
 </head>
 <body id="app" skin='<% nvram_get("sc_skin"); %>' onload="init();">
@@ -263,6 +274,7 @@ function clear_config() {
                                             <a href="https://github.com/EasyTier/EasyTier" target="_blank"><em>EasyTier</em></a>是一个简单、安全、去中心化的内网穿透VPN组网方案。<br />
                                             <span><a type="button" href="https://github.com/EasyTier/EasyTier" target="_blank" class="ks_btn" style="margin-left:5px;" >项目地址</a></span>
                                             <span><a type="button" class="ks_btn" href="javascript:void(0);" onclick="get_log(1)" style="margin-left:5px;">插件日志</a></span>
+                                            <span><a type="button" class="ks_btn" href="javascript:void(0);" onclick="clear_runtime_log()" style="margin-left:5px;">清空运行日志</a></span>
                                         </div>
                                         <div id="easytier_status_pannel">
                                             <table width="100%" border="1" align="center" cellpadding="4" cellspacing="0" bordercolor="#6b8fa3" class="FormTable">

@@ -15,7 +15,7 @@ OPERATION=""
 WEB_SUBMIT=""
 for arg in "$@"; do
     case "$arg" in
-        start|stop|restart|status|save_config|save_autostart)
+        start|stop|restart|status|save_config|save_autostart|clear_runtime_log)
             OPERATION="$arg"
             ;;
         web_submit)
@@ -112,32 +112,44 @@ fi
 
 # Web 表单提交处理
 if [ "$WEB_SUBMIT" = "web_submit" ]; then
-    true > $LOG_FILE 2>/dev/null
-    echo_date "========= EasyTier 任务执行 =========" >> $LOG_FILE
+    # 1. 立即返回合法的 JSON 响应，安抚前端，防止弹出“超时或失败”警告
+    http_response "success"
+
+    # 2. 将所有耗时任务放入后台的子 Shell 中异步执行，彻底与 Web 请求脱钩
+    (
+        true > $LOG_FILE 2>/dev/null
+        echo_date "========= EasyTier 任务执行 =========" >> $LOG_FILE
+        
+        case "$OPERATION" in
+            save_config)
+                save_config
+                ;;
+            start)
+                save_config && start_easytier
+                ;;
+            stop)
+                stop_easytier
+                ;;
+            restart)
+                save_config && stop_easytier && start_easytier
+                ;;
+            save_autostart)
+                dbus set easytier_autostart="$easytier_autostart"
+                echo_date "✅ 自启动设置已保存" >> $LOG_FILE
+                ;;
+            clear_runtime_log)
+                true > "$RUNTIME_LOG" 2>/dev/null
+                echo_date "✅ 运行日志已清空" >> $LOG_FILE
+                ;;
+            *)
+                echo_date "❌ 发生未知的操作: $OPERATION" >> $LOG_FILE
+                ;;
+        esac
+        
+        echo_date "✅ Web操作完成" >> $LOG_FILE
+        # 释放前端日志滚动条的终止符
+        echo "XU6J03M6" >> $LOG_FILE
+    ) >/dev/null 2>&1 &
     
-    case "$OPERATION" in
-        save_config)
-            save_config
-            ;;
-        start)
-            save_config && start_easytier
-            ;;
-        stop)
-            stop_easytier
-            ;;
-        restart)
-            save_config && stop_easytier && start_easytier
-            ;;
-        save_autostart)
-            dbus set easytier_autostart="$easytier_autostart"
-            echo_date "✅ 自启动设置已保存" >> $LOG_FILE
-            ;;
-        *)
-            echo_date "❌ 发生未知的操作: $OPERATION" >> $LOG_FILE
-            ;;
-    esac
-    
-    echo_date "✅ Web操作完成" >> $LOG_FILE
-    echo "XU6J03M6" >> $LOG_FILE
     exit 0
 fi
