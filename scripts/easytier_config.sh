@@ -70,6 +70,8 @@ start_easytier() {
         echo_date "❌ 启动失败：配置文件不存在或为空" >> $LOG_FILE
         return 1
     fi
+
+    modprobe tun >/dev/null 2>&1
     
     cd /tmp
     # 核心修复：重定向所有输入输出，彻底断开与 Web 接口的关联，防止 Timeout
