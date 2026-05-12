@@ -5,8 +5,8 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="Pragma" content="no-cache" />
 <meta http-equiv="Expires" content="-1" />
-<link rel="shortcut icon" href="/res/icon-easytier.png" />
-<link rel="icon" href="/res/icon-easytier.png" />
+<link rel="shortcut icon" href="/koolshare/res/icon-easytier.png" />
+<link rel="icon" href="/koolshare/res/icon-easytier.png" />
 <title>软件中心 - EasyTier</title>
 <link rel="stylesheet" type="text/css" href="index_style.css">
 <link rel="stylesheet" type="text/css" href="form_style.css">

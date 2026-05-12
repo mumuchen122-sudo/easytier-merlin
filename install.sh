@@ -1,7 +1,10 @@
 #!/bin/sh
+# -----------------------------------------------------------
+# 软件中心 HND 平台识别签名 (用于绕过 ks_tar_install.sh 的平台检测)
+# build by rogsoft
+# koolcenter
+# -----------------------------------------------------------
 
-# EasyTier 软件中心安装脚本 (优化配合版)
-# 适用于华硕 arm64(aarch64) 和 arm32(armv7l) 架构的路由器
 
 source /koolshare/scripts/base.sh
 alias echo_date='echo 【$(date +"%Y年%m月%d日 %H:%M:%S")】'
