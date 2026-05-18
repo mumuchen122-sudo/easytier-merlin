@@ -1,0 +1,32 @@
+name: Build and Release Plugin
+
+on:
+  push:
+    # 只有当你推送类似 v1.0.0, v2.6.4 这样的标签 (Tag) 时，才会自动触发发版
+    tags:
+      - 'v*'
+  # 允许你在 GitHub 网页的 Actions 面板手动点击运行
+  workflow_dispatch:
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # 允许机器人往你的仓库发布 Release
+
+    steps:
+      - name: 检出代码 (Checkout)
+        uses: actions/checkout@v4
+
+      - name: 编译并打包 (Run Makefile)
+        run: |
+          make all
+
+      - name: 发布到 GitHub Releases
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: easytier.tar.gz
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
