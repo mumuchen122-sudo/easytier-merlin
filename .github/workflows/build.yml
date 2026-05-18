@@ -21,20 +21,15 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "TAG=${{ github.ref_name }}" >> $GITHUB_ENV
 
-      - name: 构建 HND 平台安装包
+      - name: 🚀 一键构建双平台安装包
         run: |
-          # 传入 PLATFORM=hnd
-          make all VERSION=${{ env.VERSION }} PLATFORM=hnd
+          # 只需要执行这一句话！Makefile 会自动生成 hnd 和 qca 两个包
+          make all VERSION=${{ env.VERSION }}
 
-      - name: 构建 QCA 平台安装包
-        run: |
-          # 传入 PLATFORM=qca
-          make all VERSION=${{ env.VERSION }} PLATFORM=qca
-
-      - name: 原地挂载附件到 Release
+      - name: 📦 原地挂载附件到 Release
         shell: bash
         run: |
-          # 将当前目录下生成的所有 .tar.gz 文件（easytier_hnd.tar.gz 和 easytier_qca.tar.gz）都上传到 Release 中
+          # 将当前目录下生成的所有 .tar.gz 文件都上传到 Release 中
           gh release upload ${{ env.TAG }} *.tar.gz
         env:
           GH_TOKEN: ${{ github.token }}
