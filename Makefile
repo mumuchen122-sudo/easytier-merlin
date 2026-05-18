@@ -44,7 +44,7 @@ copy: download
 	cp res/easytier.png           $(BUILD_DIR)/$(PLUGIN_NAME)/res/
 	
 	@echo "=== 核心修复：注入 HND 平台离线安装专属免检标识 ==="
-	echo "hnd" > $(BUILD_DIR)/$(PLUGIN_NAME)/.valid
+	echo "qca" > $(BUILD_DIR)/$(PLUGIN_NAME)/.valid
 	
 	@echo "赋予执行权限..."
 	chmod +x $(BUILD_DIR)/$(PLUGIN_NAME)/bin/*
