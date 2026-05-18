@@ -5,10 +5,8 @@ OUTPUT := $(PLUGIN_NAME).tar.gz
 
 .PHONY: all clean check-version prepare download copy pack
 
-# 默认执行的动作
 all: clean pack
 
-# 检查是否传入了 VERSION 变量
 check-version:
 ifndef VERSION
 	$(error ❌ 错误: 未提供版本号! 请使用类似 make VERSION=2.6.4 的命令)
@@ -40,11 +38,13 @@ download: prepare
 copy: download
 	@echo "复制插件代码文件..."
 	cp install.sh          $(BUILD_DIR)/$(PLUGIN_NAME)/
-	cp uninstall.sh        $(BUILD_DIR)/$(PLUGIN_NAME)/
 	cp config.json.js      $(BUILD_DIR)/$(PLUGIN_NAME)/
 	cp scripts/easytier_config.sh $(BUILD_DIR)/$(PLUGIN_NAME)/scripts/
 	cp webs/Module_easytier.asp   $(BUILD_DIR)/$(PLUGIN_NAME)/webs/
 	cp res/easytier.png           $(BUILD_DIR)/$(PLUGIN_NAME)/res/
+	
+	@echo "=== 核心修复：注入 HND 平台离线安装专属免检标识 ==="
+	echo "hnd" > $(BUILD_DIR)/$(PLUGIN_NAME)/.valid
 	
 	@echo "赋予执行权限..."
 	chmod +x $(BUILD_DIR)/$(PLUGIN_NAME)/bin/*

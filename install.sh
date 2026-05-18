@@ -1,13 +1,5 @@
 #!/bin/sh
-# -----------------------------------------------------------
-# 软件中心 HND 平台识别签名 (用于绕过 ks_tar_install.sh 的平台检测)
-# build by rogsoft
-# koolcenter
-# -----------------------------------------------------------
 
-
-source /koolshare/scripts/base.sh
-alias echo_date='echo 【$(date +"%Y年%m月%d日 %H:%M:%S")】'
 
 # 模块基本信息
 MODULE="easytier"
@@ -15,6 +7,9 @@ VERSION="1.0.0"
 
 # 路径定义
 KS_DIR="/koolshare"
+
+source $KS_DIR/scripts/base.sh
+alias echo_date='echo 【$(date +"%Y年%m月%d日 %H:%M:%S")】'
 BIN_DIR="$KS_DIR/bin"
 SCRIPT_DIR="$KS_DIR/scripts"
 WEB_DIR="$KS_DIR/webs"
@@ -70,7 +65,7 @@ check_space(){
     local available=$(df $KS_DIR | tail -1 | awk '{print $4}')
     local required=5000
     if [ "$available" -lt "$required" ]; then
-        echo_date "⚠️ 警告: /koolshare 分区可用空间不足，可能导致安装失败！"
+        echo_date "⚠️ 警告: 分区可用空间不足，可能导致安装失败！"
     fi
 }
 
@@ -122,19 +117,19 @@ create_uninstall_script(){
     # 动态生成卸载脚本，注意清理我们在前后端用到的新 DBUS 变量和二进制文件
     cat > $SCRIPT_DIR/uninstall_easytier.sh <<-EOF
 #!/bin/sh
-source /koolshare/scripts/base.sh
+source ${KS_DIR}/scripts/base.sh
 
 echo_date "⏹️ 正在停止 EasyTier 服务..."
-sh /koolshare/scripts/easytier_config.sh stop >/dev/null 2>&1
+sh ${KS_DIR}/scripts/easytier_config.sh stop >/dev/null 2>&1
 
 echo_date "🗑️ 正在清理文件..."
-rm -f /koolshare/bin/easytier-core
-rm -f /koolshare/webs/Module_easytier.asp
-rm -f /koolshare/res/icon-easytier.png
-rm -f /koolshare/scripts/easytier_config.sh
-rm -f /koolshare/init.d/S99easytier.sh
-rm -f /koolshare/init.d/N99easytier.sh
-rm -rf /koolshare/configs/easytier.conf
+rm -f ${KS_DIR}/bin/easytier-core
+rm -f ${KS_DIR}/webs/Module_easytier.asp
+rm -f ${KS_DIR}/res/icon-easytier.png
+rm -f ${KS_DIR}/scripts/easytier_config.sh
+rm -f ${KS_DIR}/init.d/S99easytier.sh
+rm -f ${KS_DIR}/init.d/N99easytier.sh
+rm -rf ${KS_DIR}/configs/easytier.conf
 
 echo_date "🧹 正在清理系统配置(dbus)..."
 # 清理软件中心注册信息
@@ -157,7 +152,7 @@ dbus remove easytier_name
 dbus remove easytier_secret
 dbus remove easytier_peers
 
-rm -f /koolshare/scripts/uninstall_easytier.sh
+rm -f ${KS_DIR}/scripts/uninstall_easytier.sh
 echo_date "✅ EasyTier 已彻底卸载！"
 EOF
     chmod 755 $SCRIPT_DIR/uninstall_easytier.sh
@@ -180,21 +175,21 @@ add_to_software_center(){
     # 生成开机自启脚本 S99 (修复原版无脑自启的 Bug)
     cat > $INIT_DIR/S99easytier.sh <<-EOF
 #!/bin/sh
-source /koolshare/scripts/base.sh
+source ${KS_DIR}/scripts/base.sh
 # 检查是否勾选了开机自启动
 if [ "\$(dbus get easytier_autostart)" = "1" ]; then
-    if [ -f /koolshare/scripts/easytier_config.sh ]; then
-        sh /koolshare/scripts/easytier_config.sh start
+    if [ -f ${KS_DIR}/scripts/easytier_config.sh ]; then
+        sh ${KS_DIR}/scripts/easytier_config.sh start
     fi
 fi
 EOF
     chmod 755 $INIT_DIR/S99easytier.sh
-    
+
     # 生成关机停止脚本 N99
     cat > $INIT_DIR/N99easytier.sh <<-EOF
 #!/bin/sh
-if [ -f /koolshare/scripts/easytier_config.sh ]; then
-    sh /koolshare/scripts/easytier_config.sh stop
+if [ -f ${KS_DIR}/scripts/easytier_config.sh ]; then
+    sh ${KS_DIR}/scripts/easytier_config.sh stop
 fi
 EOF
     chmod 755 $INIT_DIR/N99easytier.sh
