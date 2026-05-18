@@ -1,32 +1,35 @@
-name: Build and Release Plugin
+name: Auto Build and Upload Release
 
 on:
-  push:
-    # 只有当你推送类似 v1.0.0, v2.6.4 这样的标签 (Tag) 时，才会自动触发发版
-    tags:
-      - 'v*'
-  # 允许你在 GitHub 网页的 Actions 面板手动点击运行
-  workflow_dispatch:
+  release:
+    types:
+      - published # 只有你在网页端发布 Release 才会触发
 
 jobs:
-  build-and-release:
+  build-plugin:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # 允许机器人往你的仓库发布 Release
+      contents: write # 给 gh 命令行赋予上传附件的权限
 
     steps:
-      - name: 检出代码 (Checkout)
+      - name: 检出代码
         uses: actions/checkout@v4
 
-      - name: 编译并打包 (Run Makefile)
+      - name: 提取动态版本号
         run: |
-          make all
+          # 假设 Tag 是 v2.6.4，将其削掉 v 变成 2.6.4 并存入环境变量
+          VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "TAG=${{ github.ref_name }}" >> $GITHUB_ENV
 
-      - name: 发布到 GitHub Releases
-        uses: softprops/action-gh-release@v2
-        if: startsWith(github.ref, 'refs/tags/')
-        with:
-          files: easytier.tar.gz
-          generate_release_notes: true
+      - name: 运行 Makefile 自动打包
+        run: |
+          # 调用 Makefile，并将刚刚提取的版本号传给它
+          make all VERSION=${{ env.VERSION }}
+
+      - name: 原地挂载附件到 Release
+        shell: bash
+        run: |
+          gh release upload ${{ env.TAG }} easytier.tar.gz
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
