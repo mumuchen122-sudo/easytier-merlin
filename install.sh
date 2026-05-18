@@ -21,7 +21,24 @@ WEB_DIR="$KS_DIR/webs"
 RES_DIR="$KS_DIR/res"
 INIT_DIR="$KS_DIR/init.d"
 CONFIG_DIR="$KS_DIR/configs"
-SOURCE_DIR="/tmp/easytier"
+
+# 自动检测安装源目录：优先使用脚本自身所在目录，
+# 兼容软件中心离线安装（可能解压到 /tmp/ 下的任意路径）
+detect_source_dir() {
+    local script_dir="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+    if [ -f "$script_dir/install.sh" ] && [ -f "$script_dir/config.json.js" ]; then
+        echo "$script_dir"
+    elif [ -d "/tmp/easytier" ] && [ -f "/tmp/easytier/install.sh" ]; then
+        echo "/tmp/easytier"
+    elif [ -d "/tmp/$MODULE" ] && [ -f "/tmp/$MODULE/install.sh" ]; then
+        echo "/tmp/$MODULE"
+    else
+        # 最后尝试从环境变量或参数获取
+        echo "$script_dir"
+    fi
+}
+SOURCE_DIR="$(detect_source_dir)"
+export SOURCE_DIR
 
 # 设置互斥锁
 set_lock(){
@@ -187,21 +204,32 @@ main(){
     set_lock
     echo_date "======================================================="
     echo_date "开始安装 EasyTier v$VERSION ..."
-    
+    echo_date "安装源目录: $SOURCE_DIR"
+
+    # 验证安装源目录
+    if [ ! -f "$SOURCE_DIR/install.sh" ]; then
+        echo_date "❌ 错误: 找不到安装源文件！"
+        echo_date "请确保安装包已正确解压，或手动指定: SOURCE_DIR=/path/to/easytier sh install.sh"
+        unset_lock
+        exit 1
+    fi
+
     check_arch
     check_space
     install_files
     create_uninstall_script
     add_to_software_center
-    
+
     # 清理安装包释放内存 (重要步骤)
-    echo_date "清理临时安装文件..."
-    rm -rf $SOURCE_DIR
-    
+    if [ -d "$SOURCE_DIR" ] && [ "$SOURCE_DIR" != "/" ]; then
+        echo_date "清理临时安装文件..."
+        rm -rf "$SOURCE_DIR"
+    fi
+
     echo_date "✅ EasyTier 安装完成！"
     echo_date "请访问 http://$(nvram get lan_ipaddr)/Module_easytier.asp 进行配置"
     echo_date "======================================================="
-    
+
     unset_lock
 }
 
