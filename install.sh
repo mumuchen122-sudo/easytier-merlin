@@ -206,10 +206,8 @@ main(){
     echo_date "开始安装 EasyTier v$VERSION ..."
     echo_date "安装源目录: $SOURCE_DIR"
 
-    # 验证安装源目录
     if [ ! -f "$SOURCE_DIR/install.sh" ]; then
         echo_date "❌ 错误: 找不到安装源文件！"
-        echo_date "请确保安装包已正确解压，或手动指定: SOURCE_DIR=/path/to/easytier sh install.sh"
         unset_lock
         exit 1
     fi
@@ -220,11 +218,11 @@ main(){
     create_uninstall_script
     add_to_software_center
 
-    # 清理安装包释放内存 (重要步骤)
-    if [ -d "$SOURCE_DIR" ] && [ "$SOURCE_DIR" != "/" ]; then
-        echo_date "清理临时安装文件..."
-        rm -rf "$SOURCE_DIR"
-    fi
+    # ===== 把这一段删除或注释掉，不要抢软件中心的活 =====
+    # if [ -d "$SOURCE_DIR" ] && [ "$SOURCE_DIR" != "/" ]; then
+    #     echo_date "清理临时安装文件..."
+    #     rm -rf "$SOURCE_DIR"
+    # fi
 
     echo_date "✅ EasyTier 安装完成！"
     echo_date "请访问 http://$(nvram get lan_ipaddr)/Module_easytier.asp 进行配置"
