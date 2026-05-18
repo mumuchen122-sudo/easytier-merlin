@@ -3,13 +3,13 @@ name: Auto Build and Upload Release
 on:
   release:
     types:
-      - published # 只有你在网页端发布 Release 才会触发
+      - published # 只有在网页端发布 Release 才会触发
 
 jobs:
   build-plugin:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # 给 gh 命令行赋予上传附件的权限
+      contents: write # 赋予上传附件的权限
 
     steps:
       - name: 检出代码
@@ -17,19 +17,24 @@ jobs:
 
       - name: 提取动态版本号
         run: |
-          # 假设 Tag 是 v2.6.4，将其削掉 v 变成 2.6.4 并存入环境变量
           VERSION=$(echo ${{ github.ref_name }} | sed 's/^v//')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "TAG=${{ github.ref_name }}" >> $GITHUB_ENV
 
-      - name: 运行 Makefile 自动打包
+      - name: 构建 HND 平台安装包
         run: |
-          # 调用 Makefile，并将刚刚提取的版本号传给它
-          make all VERSION=${{ env.VERSION }}
+          # 传入 PLATFORM=hnd
+          make all VERSION=${{ env.VERSION }} PLATFORM=hnd
+
+      - name: 构建 QCA 平台安装包
+        run: |
+          # 传入 PLATFORM=qca
+          make all VERSION=${{ env.VERSION }} PLATFORM=qca
 
       - name: 原地挂载附件到 Release
         shell: bash
         run: |
-          gh release upload ${{ env.TAG }} easytier.tar.gz
+          # 将当前目录下生成的所有 .tar.gz 文件（easytier_hnd.tar.gz 和 easytier_qca.tar.gz）都上传到 Release 中
+          gh release upload ${{ env.TAG }} *.tar.gz
         env:
           GH_TOKEN: ${{ github.token }}

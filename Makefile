@@ -1,19 +1,27 @@
-# EasyTier KoolShare 插件自动化打包 Makefile
+# EasyTier KoolShare 插件自动化打包 Makefile (多平台支持版)
 PLUGIN_NAME := easytier
 BUILD_DIR := build_tmp
-OUTPUT := $(PLUGIN_NAME).tar.gz
+
+# 接收外部传入的平台参数，如果没有传，默认使用 hnd
+PLATFORM ?= hnd
+
+# 动态生成最终的压缩包名字，例如：easytier_hnd.tar.gz
+OUTPUT := $(PLUGIN_NAME)_$(PLATFORM).tar.gz
 
 .PHONY: all clean check-version prepare download copy pack
 
+# 默认执行的动作
 all: clean pack
 
+# 检查是否传入了 VERSION 变量
 check-version:
 ifndef VERSION
-	$(error ❌ 错误: 未提供版本号! 请使用类似 make VERSION=2.6.4 的命令)
+	$(error ❌ 错误: 未提供版本号! 请使用类似 make VERSION=2.6.4 PLATFORM=hnd 的命令)
 endif
 
 clean:
 	@echo "清理旧文件..."
+	# 注意：这里只会清理当前 PLATFORM 对应的 tar.gz，不会误删其他平台的包
 	rm -rf $(BUILD_DIR) $(OUTPUT)
 
 prepare: check-version
@@ -43,8 +51,9 @@ copy: download
 	cp webs/Module_easytier.asp   $(BUILD_DIR)/$(PLUGIN_NAME)/webs/
 	cp res/easytier.png           $(BUILD_DIR)/$(PLUGIN_NAME)/res/
 	
-	@echo "=== 核心修复：注入 HND 平台离线安装专属免检标识 ==="
-	echo "qca" > $(BUILD_DIR)/$(PLUGIN_NAME)/.valid
+	@echo "=== 核心注入：生成 $(PLATFORM) 平台专属免检标识 ==="
+	# 这里的 $(PLATFORM) 会被替换为 hnd 或 qca
+	echo "$(PLATFORM)" > $(BUILD_DIR)/$(PLUGIN_NAME)/.valid
 	
 	@echo "赋予执行权限..."
 	chmod +x $(BUILD_DIR)/$(PLUGIN_NAME)/bin/*
@@ -56,4 +65,4 @@ pack: copy
 	cd $(BUILD_DIR) && tar -czvf ../$(OUTPUT) $(PLUGIN_NAME)/
 	@echo "清理临时文件..."
 	rm -rf $(BUILD_DIR)
-	@echo "✅ 打包完成: $(OUTPUT)"
+	@echo "✅ $(PLATFORM) 平台打包完成: $(OUTPUT)"
