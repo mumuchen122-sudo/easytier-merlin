@@ -81,7 +81,7 @@ start_easytier() {
     sleep 2
     if kill -0 $(cat $PID_FILE 2>/dev/null) 2>/dev/null; then
         # === 新增：添加防火墙转发与 NAT 伪装规则 ===
-        echo_date "🛡️ 正在配置子网代理防火墙规则..." >> $LOG_FILE
+        iptables -I INPUT -i tun+ -j ACCEPT 2>/dev/null #允许公网服务器 Ping 通路由器，并允许访问路由器本身
         iptables -I FORWARD -i br0 -o tun+ -j ACCEPT 2>/dev/null
         iptables -I FORWARD -i tun+ -o br0 -j ACCEPT 2>/dev/null
         iptables -t nat -A POSTROUTING -o tun+ -j MASQUERADE 2>/dev/null
@@ -99,6 +99,7 @@ stop_easytier() {
     echo_date "⏹️ 正在停止 EasyTier..." >> $LOG_FILE
     # === 新增：清理防火墙转发与 NAT 伪装规则 ===
     echo_date "🧹 正在清理防火墙规则..." >> $LOG_FILE
+    iptables -D INPUT -i tun+ -j ACCEPT 2>/dev/null
     iptables -D FORWARD -i br0 -o tun+ -j ACCEPT 2>/dev/null
     iptables -D FORWARD -i tun+ -o br0 -j ACCEPT 2>/dev/null
     iptables -t nat -D POSTROUTING -o tun+ -j MASQUERADE 2>/dev/null
