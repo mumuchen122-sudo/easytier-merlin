@@ -8,7 +8,7 @@
 
 ## 功能特性
 
-- 支持 ARM64 (aarch64) 和 ARM32 (armv7l/armv6l) 架构
+- 支持 ARM64 (aarch64) 和 ARM32 (armv7l/armv6l) 架构 , 固件 qca 和 hnd
 - Web 界面配置管理
 - 开机自启动支持
 - 配置文件在线编辑
